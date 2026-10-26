@@ -42,4 +42,4 @@ transform = A.Compose([
 
 dataset = dataset.with_transform(albumentations_transforms)
 
-
+# Split so some pokemon are not present in training data
