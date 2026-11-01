@@ -42,7 +42,7 @@ def addTypeFeature(dataset):
         pokemon_name = example['label']
         
         # Look up the row in the CSV where the 'name' column matches the pokemon's name
-        matching_rows = pokemonCSV.loc[pokemonCSV['name'] == pokemon_name]
+        matching_rows = pokemonCSV.loc[pokemonCSV['id'] == pokemon_name]
         
         if not matching_rows.empty:
             # .iloc[0] grabs the first match found
@@ -75,11 +75,23 @@ transform = A.Compose([
 
 # add new features to dataset (pokemon's type)
 dataset = addTypeFeature(dataset)
-print(dataset)
 
 # apply image albumentations tranformation
 dataset = dataset.with_transform(albumentations_transforms)
 
 
-
 # Split so some pokemon are not present in training data
+
+
+
+# 2. Define the columns you want to keep
+desired_columns = ["label", "typel", "type2"]
+
+# 3. Process each split in the DatasetDict
+for split_name, ds in dataset.items():
+  # Identify columns to remove
+  cols_to_remove = [col for col in ds.column_names if col not in desired_columns]
+  filtered_ds = ds.remove_columns(cols_to_remove)
+
+  # Option A: Save as CSV
+  filtered_ds.to_csv(f"{split_name}_filtered.csv", index=False)
